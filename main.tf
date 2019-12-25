@@ -1,14 +1,41 @@
+variable "container_name" {
+  description = "Name of container"
+  default = "blog"
+}
+variable "image" {
+  description = "image for container"
+  default = "ghost:latest"
+}
+variable "int_port" {
+  description = "internal port for container"
+  default = 2368
+}
+variable "ext_port" {
+  description = "external port for container"
+  default = 80
+}
+
+
 # Download the latest Ghost image
 resource "docker_image" "image_id" {
-  name = "ghost:alpine"
+  name = "${var.image}"
 }
 
 # Start the Container
 resource "docker_container" "container_id" {
-  name  = "blog"
-  image = "docker_image.image_id.latest"
+  name  = var.container_name
+  image = var.image
   ports {
-    internal = "2368"
-    external = "8080"
+    internal = var.int_port
+    external = var.ext_port
   }
+}
+
+#Output the IP Address of the Container
+output "IP_Address" {
+  value = "${docker_container.container_id.ip_address}"
+}
+
+output "container_name" {
+  value = "${docker_container.container_id.name}"
 }
